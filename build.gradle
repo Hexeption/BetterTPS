@@ -1,0 +1,60 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'com.matthewprenger.cursegradle' version "1.1.2"
+}
+
+apply plugin: 'java'
+
+
+group = 'uk.co.hexeption'
+version = '1.0.0'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+
+def ENV = System.getenv()
+version = version + "+" + (ENV.BUILD_NUMBER ? ("build." + ENV.BUILD_NUMBER) : "custom")
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'papermc-repo'
+        url = 'https://papermc.io/repo/repository/maven-public/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+}
+
+dependencies {
+    compileOnly 'com.destroystokyo.paper:paper-api:1.16.1-R0.1-SNAPSHOT'
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        filter ReplaceTokens, tokens: [version: version]
+    }
+}
+
+curseforge {
+    if (project.hasProperty('curse_api_key')) {
+        apiKey = project.getProperty('curse_api_key')
+    }
+    project {
+        id = '401293'
+        changelog = 'A changelog can be found at https://github.com/Hexeption/BetterTPS'
+        releaseType = 'release'
+        mainArtifact(processResources) {
+            displayName = "BetterTPS v$version"
+        }
+        afterEvaluate {
+            uploadTask.dependsOn("processResources")
+        }
+    }
+    options {
+        forgeGradleIntegration = false
+    }
+}

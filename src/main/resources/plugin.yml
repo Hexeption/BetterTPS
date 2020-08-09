@@ -1,0 +1,8 @@
+name: BetterTPS
+version: @version@
+main: uk.co.hexeption.bettertps.BetterTPS
+commands:
+  btps:
+    description: Gets the current ticks per second for the server
+    usage: /btps
+    permission: bettertps.command.tps
